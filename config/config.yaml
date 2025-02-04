@@ -1,0 +1,31 @@
+# config.yaml
+
+# Exchange configuration
+exchange: binance             # Name of the exchange (e.g., binance, coinbase, kraken)
+timeframe: 1h                 # Timeframe for data (e.g., 1m, 5m, 1h, 1d)
+base_currency: USDT           # Base currency for trading pairs
+quote_currency: BTC           # Quote currency for trading pairs
+max_open_positions: 3         # Maximum number of open trading positions
+
+# Strategies to be used
+strategies:
+  - name: MovingAverageCross  # Name of the strategy
+    params:
+      fast_ma: 20             # Fast moving average period
+      slow_ma: 50             # Slow moving average period
+  - name: RSIStrategy         # Another strategy
+    params:
+      rsi_period: 14          # RSI calculation period
+      oversold: 30            # RSI oversold threshold
+      overbought: 70          # RSI overbought threshold
+
+# Logging configuration
+logging:
+  level: INFO                 # Logging level (DEBUG, INFO, WARN, ERROR)
+  file: logs/bot.log          # File to store logs
+
+# Risk management settings
+risk:
+  position_size: 0.01         # Position size as a fraction of account balance
+  stop_loss: 0.02             # Stop-loss threshold (e.g., 2% risk)
+  take_profit: 0.04           # Take-profit threshold (e.g., 4% profit)
