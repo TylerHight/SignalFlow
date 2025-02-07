@@ -1,5 +1,5 @@
 from .binance_client import BinanceClient
-from data.data_processing.data_formatter import DataFormatter
+from ...data_processing.data_formatter import DataFormatter
 import datetime
 
 

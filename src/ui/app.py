@@ -1,14 +1,12 @@
 from flask import Flask, render_template, request, jsonify
-from data.data_fetch.binance_data_fetch.fetch_data import fetch_historical_candles, fetch_current_price
+from src.data.data_fetch.binance_data_fetch.fetch_data import fetch_historical_candles, fetch_current_price
 
 app = Flask(__name__)
-
 
 @app.route('/')
 def index():
     """Home page displaying options for fetching data."""
     return render_template("index.html")
-
 
 @app.route('/historical', methods=['POST', 'GET'])
 def historical_data():
@@ -24,7 +22,6 @@ def historical_data():
 
     return render_template("historical_data.html", data=None)
 
-
 @app.route('/live', methods=['POST', 'GET'])
 def live_data():
     """Fetch and display current/live price."""
@@ -36,7 +33,6 @@ def live_data():
         return render_template("live_data.html", symbol=symbol, data=data)
 
     return render_template("live_data.html", data=None)
-
 
 if __name__ == "__main__":
     app.run(debug=True)

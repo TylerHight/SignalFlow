@@ -1,7 +1,5 @@
 import requests
-
-BASE_URL = "https://api.binance.com/api/v3"
-
+BASE_URL = "https://api.binance.us/api/v3"
 
 class BinanceClient:
     """A client to interact with Binance's REST API."""

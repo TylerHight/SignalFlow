@@ -1,5 +1,5 @@
-from data.data_fetch.binance_data_fetch.data_fetcher import DataFetcher
-from data.storage import save_to_csv
+from src.data.data_fetch.binance_data_fetch.data_fetcher import DataFetcher
+from src.data.storage import save_to_csv
 
 if __name__ == "__main__":
     # Initialize fetcher
