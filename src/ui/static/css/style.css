@@ -32,3 +32,23 @@ a, button {
     border-radius: 0.5rem;
     padding: 1rem;
 }
+
+/* Search results scrollbar */
+.search-results::-webkit-scrollbar {
+    width: 6px;
+}
+
+.search-results::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 3px;
+}
+
+/* Filter menu transitions */
+.filter-menu {
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.filter-menu.hidden {
+    opacity: 0;
+    transform: translateY(-10px);
+}
