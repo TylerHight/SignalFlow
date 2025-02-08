@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify, Response, send_from_directory
 from src.data.data_fetch.binance_data_fetch.data_fetcher import DataFetcher
+from src.data.data_fetch.binance_data_fetch.websocket_client import BinanceWebSocket
 from src.trading.backtesting.backtest_engine import BacktestEngine
 from src.trading.technical_analysis.indicators import TechnicalIndicators
 from src.trading.execution.trade_executor import TradeExecutor

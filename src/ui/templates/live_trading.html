@@ -69,57 +69,63 @@
     </div>
 </div>
 
-<div class="col-md-3">
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="card-title">New Order</h5>
-        </div>
-        <div class="card-body">
-            <form id="orderForm">
-                <div class="mb-3">
-                    <label for="orderSymbol" class="form-label">Symbol</label>
-                    <input type="text" class="form-control" id="orderSymbol" value="BTCUSDT">
-                </div>
-                <div class="mb-3">
-                    <label for="orderType" class="form-label">Order Type</label>
-                    <select class="form-control" id="orderType">
-                        <option value="market">Market</option>
-                        <option value="limit">Limit</option>
-                        <option value="stop">Stop</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="orderSize" class="form-label">Size</label>
-                    <input type="number" class="form-control" id="orderSize" step="0.001">
-                </div>
-                <div class="mb-3">
-                    <label for="orderPrice" class="form-label">Price</label>
-                    <input type="number" class="form-control" id="orderPrice" step="0.01">
-                </div>
-                <div class="d-grid gap-2">
-                    <button type="button" class="btn btn-success" onclick="submitBuyOrder()">Buy</button>
-                    <button type="button" class="btn btn-danger" onclick="submitSellOrder()">Sell</button>
-                </div>
-            </form>
+<div class="grid-stack-item" gs-w="3" gs-h="4" gs-x="0" gs-y="6">
+    <div class="grid-stack-item-content">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title">New Order</h5>
+            </div>
+            <div class="card-body">
+                <form id="orderForm">
+                    <div class="mb-3">
+                        <label for="orderSymbol" class="form-label">Symbol</label>
+                        <input type="text" class="form-control" id="orderSymbol" value="BTCUSDT">
+                    </div>
+                    <div class="mb-3">
+                        <label for="orderType" class="form-label">Order Type</label>
+                        <select class="form-control" id="orderType">
+                            <option value="market">Market</option>
+                            <option value="limit">Limit</option>
+                            <option value="stop">Stop</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="orderSize" class="form-label">Size</label>
+                        <input type="number" class="form-control" id="orderSize" step="0.001">
+                    </div>
+                    <div class="mb-3">
+                        <label for="orderPrice" class="form-label">Price</label>
+                        <input type="number" class="form-control" id="orderPrice" step="0.01">
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-success" onclick="submitBuyOrder()">Buy</button>
+                        <button type="button" class="btn btn-danger" onclick="submitSellOrder()">Sell</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
+</div>
 
-    <div class="card">
-        <div class="card-header">
-            <h5 class="card-title">Account Summary</h5>
-        </div>
-        <div class="card-body">
-            <div class="mb-3">
-                <label class="fw-bold">Balance:</label>
-                <span id="accountBalance">$0.00</span>
+<div class="grid-stack-item" gs-w="3" gs-h="3" gs-x="3" gs-y="6">
+    <div class="grid-stack-item-content">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Account Summary</h5>
             </div>
-            <div class="mb-3">
-                <label class="fw-bold">Equity:</label>
-                <span id="accountEquity">$0.00</span>
-            </div>
-            <div class="mb-3">
-                <label class="fw-bold">Used Margin:</label>
-                <span id="usedMargin">$0.00</span>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="fw-bold">Balance:</label>
+                    <span id="accountBalance">$0.00</span>
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold">Equity:</label>
+                    <span id="accountEquity">$0.00</span>
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold">Used Margin:</label>
+                    <span id="usedMargin">$0.00</span>
+                </div>
             </div>
         </div>
     </div>
@@ -136,20 +142,21 @@
     var grid = GridStack.init({
         column: 12,
         animate: true,
-        cellHeight: 80,
+        cellHeight: 60,
         minRow: 1,
         float: false,
         resizable: {
             handles: 'e,se,s,sw,w'
         },
         draggable: {
-            handle: '.card-header'
+            handle: '.card-header',
+            scroll: true
         },
+        margin: 15,
         disableDrag: false,
         disableResize: false,
         staticGrid: false,
-        removable: false,
-        margin: 10
+        removable: false
     });
 
     // Save layout to localStorage when changed

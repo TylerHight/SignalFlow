@@ -118,20 +118,22 @@
     var grid = GridStack.init({
         column: 12,
         animate: true,
-        cellHeight: 80,
+        cellHeight: 60,
         minRow: 1,
         float: false,
         resizable: {
             handles: 'e,se,s,sw,w'
         },
         draggable: {
-            handle: '.card-header'
+            handle: '.card-header',
+            scroll: true
         },
+        margin: 15,
         disableDrag: false,
         disableResize: false,
         staticGrid: false,
         removable: false,
-        margin: 10
+        gap: 15
     });
 
     grid.on('change', function(event, items) {
