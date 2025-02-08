@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Trade Lab{% endblock %}
+
+{% block header %}Trade Lab{% endblock %}
+
+{% block content %}
+<div class="flex h-full">
+    <!-- Sidebar Controls -->
+    <div class="w-64 bg-gray-800 p-4 rounded-lg mr-4">
+        <div class="space-y-4">
+            <!-- Search -->
+            <div>
+                <label class="block text-gray-400 mb-2">Search Crypto</label>
+                <input type="text" id="cryptoSearch" class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2" 
+                       placeholder="Enter symbol...">
+            </div>
+
+            <!-- Timeframe Selection -->
+            <div>
+                <label class="block text-gray-400 mb-2">Timeframe</label>
+                <select id="timeframe" class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                    <option value="1m">1 minute</option>
+                    <option value="5m">5 minutes</option>
+                    <option value="15m">15 minutes</option>
+                    <option value="1h">1 hour</option>
+                    <option value="4h">4 hours</option>
+                    <option value="1d">1 day</option>
+                </select>
+            </div>
+
+            <!-- Strategy Selection -->
+            <div>
+                <label class="block text-gray-400 mb-2">Strategy</label>
+                <select id="strategy" class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                    <option value="ma_cross">MA Crossover</option>
+                    <option value="rsi">RSI Strategy</option>
+                    <option value="macd">MACD Strategy</option>
+                </select>
+            </div>
+
+            <!-- Strategy Parameters -->
+            <div id="strategyParams" class="space-y-2">
+                <!-- Dynamic parameters will be inserted here -->
+            </div>
+
+            <!-- Backtest Controls -->
+            <div class="space-y-2">
+                <button id="runBacktest" class="w-full bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+                    Run Backtest
+                </button>
+                <button id="clearCharts" class="w-full bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded">
+                    Clear Charts
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Chart Area -->
+    <div class="flex-1">
+        <div class="grid grid-cols-2 gap-4" id="chartGrid">
+            <!-- Charts will be dynamically added here -->
+        </div>
+    </div>
+</div>
+
+<!-- Results Modal -->
+<div id="resultsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-gray-800 p-6 rounded-lg w-3/4">
+        <h3 class="text-xl mb-4">Backtest Results</h3>
+        <div id="resultsContent"></div>
+        <button class="mt-4 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded" onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+<script>
+// Initialize TradingView's lightweight charts
+document.addEventListener('DOMContentLoaded', function() {
+    initializeTradeLab();
+});
+
+function initializeTradeLab() {
+    // Implementation will be added
+    console.log("Trade Lab initialized");
+}
+
+function closeModal() {
+    document.getElementById('resultsModal').classList.add('hidden');
+}
+</script>
+{% endblock %}

@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 from src.data.data_fetch.binance_data_fetch.data_fetcher import DataFetcher
 import json
+from src.trading.backtesting.backtest_engine import BacktestEngine
 
 app = Flask(__name__)
 data_fetcher = DataFetcher()
@@ -21,6 +22,10 @@ def dashboard():
 @app.route('/trading')
 def trading():
     return render_template('trading.html')
+
+@app.route('/tradelab')
+def tradelab():
+    return render_template('tradelab.html')
 
 @app.route('/settings')
 def settings():
