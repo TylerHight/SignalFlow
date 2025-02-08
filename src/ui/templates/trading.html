@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Trading{% endblock %}
+
+{% block header %}Trading Controls{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Trading Controls -->
+    <div class="bg-gray-800 p-6 rounded-lg">
+        <h3 class="text-xl mb-4">Trading Settings</h3>
+        <form class="space-y-4">
+            <div>
+                <label class="block text-gray-400 mb-2">Trading Pair</label>
+                <select class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                    <option>BTC/USDT</option>
+                    <option>ETH/USDT</option>
+                    <option>BNB/USDT</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-gray-400 mb-2">Strategy</label>
+                <select class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                    <option>Moving Average Crossover</option>
+                    <option>Relative Strength Index Strategy</option>
+                    <option>Moving Average Convergence Divergence Strategy</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-gray-400 mb-2">Position Size (USDT)</label>
+                <input type="number" class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2" value="100">
+            </div>
+            <div class="flex space-x-4">
+                <button class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">Start Trading</button>
+                <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded">Stop Trading</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Active Positions -->
+    <div class="bg-gray-800 p-6 rounded-lg">
+        <h3 class="text-xl mb-4">Active Positions</h3>
+        <div class="space-y-4">
+            <div class="border border-gray-700 rounded p-4">
+                <div class="flex justify-between mb-2">
+                    <span class="text-gray-400">BTC/USDT</span>
+                    <span class="text-green-400">Long</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Entry: $45,000</span>
+                    <span>Size: 0.1 BTC</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trade History -->
+    <div class="bg-gray-800 p-6 rounded-lg">
+        <h3 class="text-xl mb-4">Trade History</h3>
+        <div class="space-y-4">
+            <div class="border border-gray-700 rounded p-4">
+                <div class="flex justify-between mb-2">
+                    <span class="text-gray-400">BTC/USDT</span>
+                    <span class="text-red-400">Closed</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Profit/Loss:</span>
+                    <span class="text-green-400">+2.5%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

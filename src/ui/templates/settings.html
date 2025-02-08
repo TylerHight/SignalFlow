@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block header %}Bot Settings{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-gray-800 p-6 rounded-lg">
+        <h3 class="text-xl mb-6">Configuration</h3>
+        <form class="space-y-6">
+            <!-- API Configuration -->
+            <div class="space-y-4">
+                <h4 class="text-lg text-gray-300">API Configuration</h4>
+                <div>
+                    <label class="block text-gray-400 mb-2">API Key</label>
+                    <input type="password" class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2" value="********">
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-2">API Secret</label>
+                    <input type="password" class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2" value="********">
+                </div>
+            </div>
+
+            <!-- Risk Management -->
+            <div class="space-y-4">
+                <h4 class="text-lg text-gray-300">Risk Management</h4>
+                <div>
+                    <label class="block text-gray-400 mb-2">Max Position Size (%)</label>
+                    <input type="number" class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2" value="5">
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-2">Stop Loss (%)</label>
+                    <input type="number" class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2" value="2">
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="space-y-4">
+                <h4 class="text-lg text-gray-300">Notifications</h4>
+                <div class="flex items-center">
+                    <input type="checkbox" class="bg-gray-700 border border-gray-600 rounded" checked>
+                    <label class="ml-2 text-gray-400">Email Notifications</label>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" class="bg-gray-700 border border-gray-600 rounded" checked>
+                    <label class="ml-2 text-gray-400">Telegram Notifications</label>
+                </div>
+            </div>
+
+            <div class="pt-4">
+                <button class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded">Save Settings</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
