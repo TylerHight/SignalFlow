@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container-fluid px-4">
 <div class="grid-stack">
-    <div class="grid-stack-item" gs-w="8" gs-h="6">
+    <div class="grid-stack-item" gs-w="6" gs-h="4">
         <div class="grid-stack-item-content">
             <div class="card-header">
                 <h5 class="card-title">Backtest Results</h5>
@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div class="grid-stack-item" gs-w="4" gs-h="6">
+    <div class="grid-stack-item" gs-w="3" gs-h="4">
         <div class="grid-stack-item-content">
             <div class="card-header">
                 <h5 class="card-title">Strategy Configuration</h5>
@@ -67,7 +67,7 @@
         </div>
     </div>
     
-    <div class="grid-stack-item" gs-w="4" gs-h="4">
+    <div class="grid-stack-item" gs-w="3" gs-h="4">
         <div class="grid-stack-item-content">
             <div class="card mb-4">
                 <div class="card-header">
@@ -117,25 +117,26 @@
     // Initialize GridStack
     var grid = GridStack.init({
         column: 12,
-        animate: false,
+        animate: true,
         cellHeight: 60,
         minRow: 1,
         float: true,
         resizable: {
-            handles: 'e,se,s,sw,w'
+            handles: 'all'
         },
         draggable: {
             handle: '.card-header',
             scroll: true
         },
-        margin: 10,
-        cellWidth: 100,
+        margin: '5px',
+        cellWidth: 80,
+        disableOneColumnMode: true,
         minWidth: 200,
         disableDrag: false,
         disableResize: false,
         staticGrid: false,
         removable: false,
-        gap: 15
+        gap: 10
     });
 
     grid.on('change', function(event, items) {
