@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+
+{% block title %}Live Trading - Crypto Trading Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+<div class="grid-stack">
+    <div class="grid-stack-item" gs-w="12" gs-h="6">
+        <div class="grid-stack-item-content">
+            <div class="card-header">
+                <h5 class="card-title">Live Price Chart</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="liveChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-stack-item" gs-w="6" gs-h="3">
+        <div class="grid-stack-item-content">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title">Open Positions</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Size</th>
+                                <th>Entry</th>
+                                <th>Current</th>
+                                <th>P/L</th>
+                            </tr>
+                        </thead>
+                        <tbody id="positionsTable">
+                            <!-- Positions will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-stack-item" gs-w="6" gs-h="3">
+        <div class="grid-stack-item-content">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title">Open Orders</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Type</th>
+                                <th>Size</th>
+                                <th>Price</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTable">
+                            <!-- Orders will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-3">
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title">New Order</h5>
+        </div>
+        <div class="card-body">
+            <form id="orderForm">
+                <div class="mb-3">
+                    <label for="orderSymbol" class="form-label">Symbol</label>
+                    <input type="text" class="form-control" id="orderSymbol" value="BTCUSDT">
+                </div>
+                <div class="mb-3">
+                    <label for="orderType" class="form-label">Order Type</label>
+                    <select class="form-control" id="orderType">
+                        <option value="market">Market</option>
+                        <option value="limit">Limit</option>
+                        <option value="stop">Stop</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="orderSize" class="form-label">Size</label>
+                    <input type="number" class="form-control" id="orderSize" step="0.001">
+                </div>
+                <div class="mb-3">
+                    <label for="orderPrice" class="form-label">Price</label>
+                    <input type="number" class="form-control" id="orderPrice" step="0.01">
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-success" onclick="submitBuyOrder()">Buy</button>
+                    <button type="button" class="btn btn-danger" onclick="submitSellOrder()">Sell</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title">Account Summary</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="fw-bold">Balance:</label>
+                <span id="accountBalance">$0.00</span>
+            </div>
+            <div class="mb-3">
+                <label class="fw-bold">Equity:</label>
+                <span id="accountEquity">$0.00</span>
+            </div>
+            <div class="mb-3">
+                <label class="fw-bold">Used Margin:</label>
+                <span id="usedMargin">$0.00</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Load saved layout if it exists
+    let savedLayout = localStorage.getItem('liveTradeLayout');
+    let initialLayout = savedLayout ? JSON.parse(savedLayout) : null;
+
+    // Initialize GridStack
+    var grid = GridStack.init({
+        column: 12,
+        animate: true,
+        cellHeight: 80,
+        minRow: 1,
+        float: false,
+        resizable: {
+            handles: 'e,se,s,sw,w'
+        },
+        draggable: {
+            handle: '.card-header'
+        },
+        disableDrag: false,
+        disableResize: false,
+        staticGrid: false,
+        removable: false,
+        margin: 10
+    });
+
+    // Save layout to localStorage when changed
+    grid.on('change', function(event, items) {
+        localStorage.setItem('liveTradeLayout', JSON.stringify(grid.save()));
+    });
+
+    // Load saved layout if it exists
+    if (initialLayout) {
+        grid.removeAll();
+        grid.load(initialLayout);
+    }
+
+    let webSocket;
+    let priceEventSource;
+    const context = document.getElementById('liveChart').getContext('2d');
+    const liveChart = new Chart(context, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Price',
+                data: [],
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // Initialize price stream
+    function initializePriceStream() {
+        const symbol = document.getElementById('orderSymbol').value;
+        priceEventSource = new EventSource(`/api/stream/price/${symbol}`);
+        
+        priceEventSource.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            updateChart(data.p);
+            updateCurrentPrice(data.p);
+        };
+    }
+
+    function updateChart(price) {
+        const now = new Date().toLocaleTimeString();
+        liveChart.data.labels.push(now);
+        liveChart.data.datasets[0].data.push(price);
+        
+        if (liveChart.data.labels.length > 100) {
+            liveChart.data.labels.shift();
+            liveChart.data.datasets[0].data.shift();
+        }
+        
+        liveChart.update();
+    }
+
+    // Order submission functions
+    function submitBuyOrder() {
+        const symbol = document.getElementById('orderSymbol').value;
+        const quantity = document.getElementById('orderSize').value;
+        
+        fetch('/api/trade/market', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                symbol: symbol,
+                side: 'BUY',
+                quantity: quantity
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('Error: ' + data.error);
+            } else {
+                updatePositions();
+                alert('Buy order placed successfully');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error placing order');
+        });
+    }
+
+    function submitSellOrder() {
+        const symbol = document.getElementById('orderSymbol').value;
+        const quantity = document.getElementById('orderSize').value;
+        
+        fetch('/api/trade/market', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                symbol: symbol,
+                side: 'SELL',
+                quantity: quantity
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('Error: ' + data.error);
+            } else {
+                updatePositions();
+                alert('Sell order placed successfully');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error placing order');
+        });
+    }
+
+    function updatePositions() {
+        fetch('/api/trade/positions')
+            .then(response => response.json())
+            .then(positions => {
+                // Update positions table
+                const positionsTable = document.getElementById('positionsTable');
+                positionsTable.innerHTML = '';
+                
+                Object.entries(positions).forEach(([symbol, position]) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${symbol}</td>
+                        <td>${position.quantity}</td>
+                        <td>${position.entry_price}</td>
+                        <td>-</td>
+                        <td>-</td>
+                    `;
+                    positionsTable.appendChild(row);
+                });
+            });
+    }
+
+    // Initialize price stream when page loads
+    document.addEventListener('DOMContentLoaded', initializePriceStream);
+
+    // Update positions every 5 seconds
+    setInterval(updatePositions, 5000);
+</script>
+</div>
+{% endblock %}

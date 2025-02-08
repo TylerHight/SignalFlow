@@ -16,7 +16,7 @@
     </form>
 
     {% if data %}
-    <h2 class="mt-5">{{ symbol }} Current Price: {{ data['price'] }}</h2>
+    <h2 class="mt-5">{{ symbol }} Current Price: {{ data.get('price', 'N/A') }}</h2>
     {% endif %}
 </div>
 </body>
