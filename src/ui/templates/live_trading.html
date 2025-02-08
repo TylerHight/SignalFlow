@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container-fluid px-4">
 <div class="grid-stack">
-    <div class="grid-stack-item" gs-w="12" gs-h="6">
+    <div class="grid-stack-item" gs-w="8" gs-h="6">
         <div class="grid-stack-item-content">
             <div class="card-header">
                 <h5 class="card-title">Live Price Chart</h5>
@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div class="grid-stack-item" gs-w="6" gs-h="3">
+    <div class="grid-stack-item" gs-w="4" gs-h="4">
         <div class="grid-stack-item-content">
             <div class="card mb-4">
                 <div class="card-header">
@@ -141,10 +141,10 @@
     // Initialize GridStack
     var grid = GridStack.init({
         column: 12,
-        animate: true,
+        animate: false,
         cellHeight: 60,
         minRow: 1,
-        float: false,
+        float: true,
         resizable: {
             handles: 'e,se,s,sw,w'
         },
@@ -152,7 +152,9 @@
             handle: '.card-header',
             scroll: true
         },
-        margin: 15,
+        margin: 10,
+        cellWidth: 100,
+        minWidth: 200,
         disableDrag: false,
         disableResize: false,
         staticGrid: false,
