@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, Response, send_from_directory
+from flask import Flask, render_template, request, jsonify, Response
 from src.data.data_fetch.binance_data_fetch.data_fetcher import DataFetcher
 from src.data.data_fetch.binance_data_fetch.websocket_client import BinanceWebSocket
 from src.trading.backtesting.backtest_engine import BacktestEngine
@@ -13,40 +13,15 @@ backtest_engine = BacktestEngine()
 
 @app.route('/')
 def index():
-    """Home page displaying options for fetching data."""
     return render_template("index.html")
 
-@app.route('/historical', methods=['POST', 'GET'])
-def historical_data():
-    """Fetch and display historical data."""
-    if request.method == 'POST':
-        symbol = request.form.get("symbol", "BTCUSDT")
-        interval = request.form.get("interval", "1d")
-        limit = int(request.form.get("limit", "10"))
-        data = data_fetcher.fetch_historical_data(symbol=symbol, interval=interval, limit=limit)
-        return render_template("historical_data.html", symbol=symbol, data=data)
-
-    return render_template("historical_data.html", data=None)
-
-@app.route('/backtest')
-def backtest():
-    """Display backtesting interface."""
-    return render_template("backtest.html")
+@app.route('/trade-lab')
+def trade_lab():
+    return render_template("trade_lab.html")
 
 @app.route('/live-trading')
 def live_trading():
-    """Display live trading interface."""
     return render_template("live_trading.html")
-
-@app.route('/live', methods=['POST', 'GET'])
-def live_data():
-    """Fetch and display current/live price."""
-    if request.method == 'POST':
-        symbol = request.form.get("symbol", "BTCUSDT")
-        data = data_fetcher.fetch_current_price(symbol=symbol)
-        return render_template("live_data.html", symbol=symbol, data=data)
-
-    return render_template("live_data.html", data=None)
 
 @app.route('/api/technical/indicators', methods=['POST'])
 def calculate_indicators():
