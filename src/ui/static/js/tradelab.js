@@ -3,6 +3,7 @@ class TradeLab {
         this.charts = new Map();
         this.activeSymbols = new Set();
         this.initializeEventListeners();
+        this.initializeBacktestingPanel();
     }
 
     initializeEventListeners() {
@@ -22,6 +23,24 @@ class TradeLab {
 
         document.getElementById('strategy').addEventListener('change', () => {
             this.updateStrategyParameters();
+        });
+    }
+
+    initializeBacktestingPanel() {
+        const backtestPanel = document.querySelector('.w-64.bg-gray-800');
+        const toggleButton = document.getElementById('toggleBacktest');
+        
+        // Initially hide the panel
+        backtestPanel.classList.add('hidden');
+        
+        toggleButton.addEventListener('click', () => {
+            backtestPanel.classList.toggle('hidden');
+            const svg = toggleButton.querySelector('svg');
+            if (backtestPanel.classList.contains('hidden')) {
+                svg.style.transform = 'rotate(0deg)';
+            } else {
+                svg.style.transform = 'rotate(180deg)';
+            }
         });
     }
 

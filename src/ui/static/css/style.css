@@ -26,6 +26,11 @@ a, button {
     transition: all 0.2s ease-in-out;
 }
 
+/* Backtesting panel transition */
+.w-64.bg-gray-800 {
+    transition: all 0.3s ease-in-out;
+}
+
 /* Chart container styles */
 .chart-container {
     background: #1f2937;
