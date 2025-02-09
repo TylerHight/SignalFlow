@@ -33,7 +33,7 @@ class TradeLab {
         
         // Initially hide the panel
         backtestPanel.style.transform = 'translateX(100%)';
-        toggleButton.style.transform = 'translateX(0)';
+        toggleButton.style.right = '0';
         
         toggleButton.addEventListener('click', () => {
             isPanelOpen = !isPanelOpen;
