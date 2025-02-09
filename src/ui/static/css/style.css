@@ -52,3 +52,10 @@ a, button {
     opacity: 0;
     transform: translateY(-10px);
 }
+
+/* Filter menu spacing */
+.filter-menu select {
+    margin-bottom: 1.5rem;
+    padding: 0.75rem;
+    width: 100%;
+}

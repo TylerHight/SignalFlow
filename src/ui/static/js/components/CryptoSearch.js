@@ -13,8 +13,8 @@ class CryptoSearch {
             volume: 'all',
             priceChange: 'all'
         };
-        this.initializeEventListeners();
         this.mockData = this.getMockCryptoData();
+        this.initializeEventListeners();
     }
 
     createFilterMenu() {
@@ -39,15 +39,19 @@ class CryptoSearch {
     }
 
     initializeEventListeners() {
-        this.searchInput.addEventListener('input', () => this.handleSearch());
-        this.searchInput.addEventListener('focus', () => this.showResults());
+        this.searchInput.addEventListener('input', () => this.filterResults());
+        this.searchInput.addEventListener('focus', () => {
+            this.displayResults(this.mockData);
+            this.showResults();
+        });
         this.filterButton.addEventListener('click', (event) => {
             event.stopPropagation();
             this.toggleFilterMenu();
         });
         document.addEventListener('click', (event) => {
-            if (!this.filterButton.contains(event.target) && !this.filterMenu.contains(event.target)) {
-                this.filterMenu.classList.add('hidden');
+            if (!this.searchInput.contains(event.target) && 
+                !this.searchResults.contains(event.target)) {
+                this.hideResults();
             }
         });
     }
@@ -67,7 +71,7 @@ class CryptoSearch {
         ];
     }
 
-    handleSearch() {
+    filterResults() {
         const searchTerm = this.searchInput.value.toLowerCase();
         const filteredResults = this.mockData.filter(crypto => 
             crypto.symbol.toLowerCase().includes(searchTerm) || 
@@ -116,6 +120,8 @@ class CryptoSearch {
     showResults() {
         this.searchResults.classList.remove('hidden');
         this.searchResults.style.width = this.searchInput.offsetWidth + 'px';
+        this.searchResults.style.left = '0';
+        this.searchResults.style.top = '100%';
     }
 
     hideResults() {
@@ -141,5 +147,23 @@ class CryptoSearch {
 
     getSelectedCryptos() {
         return Array.from(this.selectedCryptos);
+    }
+
+    submitSelected() {
+        const selectedSymbols = Array.from(this.selectedCryptos);
+        if (selectedSymbols.length === 0) {
+            alert('Please select at least one cryptocurrency');
+            return;
+        }
+
+        // Create panels for selected cryptocurrencies
+        selectedSymbols.forEach(symbol => {
+            window.tradeLab.addChart(symbol);
+        });
+
+        // Clear selections and hide dropdown
+        this.selectedCryptos.clear();
+        this.hideResults();
+        this.searchInput.value = '';
     }
 }
