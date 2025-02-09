@@ -27,16 +27,16 @@ class TradeLab {
     }
 
     initializeBacktestingPanel() {
-        const backtestPanel = document.querySelector('.w-64.bg-gray-800');
+        const backtestPanel = document.getElementById('backtestPanel');
         const toggleButton = document.getElementById('toggleBacktest');
         
         // Initially hide the panel
-        backtestPanel.classList.add('hidden');
+        backtestPanel.style.transform = 'translateX(100%)';
         
         toggleButton.addEventListener('click', () => {
-            backtestPanel.classList.toggle('hidden');
+            backtestPanel.style.transform = backtestPanel.style.transform === 'translateX(100%)' ? 'translateX(0)' : 'translateX(100%)';
             const svg = toggleButton.querySelector('svg');
-            if (backtestPanel.classList.contains('hidden')) {
+            if (backtestPanel.style.transform === 'translateX(100%)') {
                 svg.style.transform = 'rotate(0deg)';
             } else {
                 svg.style.transform = 'rotate(180deg)';
