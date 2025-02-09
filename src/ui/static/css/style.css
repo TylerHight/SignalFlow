@@ -64,8 +64,10 @@ a, button {
 }
 
 .search-results {
-    display: none;
-    background: #374151;
+    max-height: 80vh !important; /* Allow it to expand to 80% of the viewport */
+    overflow-y: auto; /* Enable scrolling for long lists */
+    position: relative;
+    z-index: 1000; /* Ensure it's above other elements */
 }
 
 /* Filter menu transitions */
