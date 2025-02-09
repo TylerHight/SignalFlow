@@ -19,7 +19,7 @@ class CryptoSearch {
 
     createFilterMenu() {
         const filterContainer = document.createElement('div');
-        filterContainer.className = 'hidden absolute right-0 mt-2 w-64 bg-gray-700 rounded-lg shadow-lg z-50 p-4';
+        filterContainer.className = 'hidden absolute right-24 mt-2 w-64 bg-gray-700 rounded-lg shadow-lg z-50 p-4';
         filterContainer.innerHTML = `
             <select class="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm" id="marketCapFilter">
                 <option value="all">All Market Caps</option>
@@ -44,6 +44,12 @@ class CryptoSearch {
             this.displayResults(this.mockData);
             this.showResults();
         });
+       
+        // Prevent checkbox clicks from bubbling up to the panel
+        this.searchResults.addEventListener('click', (event) => {
+            if (event.target.type === 'checkbox') event.stopPropagation();
+        });
+
         this.filterButton.addEventListener('click', (event) => {
             event.stopPropagation();
             this.toggleFilterMenu();
@@ -84,7 +90,7 @@ class CryptoSearch {
         this.searchResults.innerHTML = '';
         results.forEach(crypto => {
             const resultItem = document.createElement('div');
-            resultItem.className = 'p-3 hover:bg-gray-600 cursor-pointer flex justify-between items-center';
+            resultItem.className = 'p-3 hover:bg-gray-600 cursor-pointer flex justify-between items-center select-none';
             resultItem.innerHTML = `
                 <div class="flex items-center">
                     <input type="checkbox" class="mr-2" ${this.selectedCryptos.has(crypto.symbol) ? 'checked' : ''}>
@@ -102,7 +108,11 @@ class CryptoSearch {
             `;
 
             const checkbox = resultItem.querySelector('input[type="checkbox"]');
-            checkbox.addEventListener('change', () => {
+           
+            // Make the entire panel clickable
+            resultItem.addEventListener('click', (event) => {
+                if (event.target.type === 'checkbox') return; // Prevent double-triggering when clicking checkbox
+                checkbox.checked = !checkbox.checked;
                 if (checkbox.checked) {
                     this.selectedCryptos.add(crypto.symbol);
                     this.searchInput.value = '';
