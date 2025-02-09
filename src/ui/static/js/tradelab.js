@@ -29,18 +29,19 @@ class TradeLab {
     initializeBacktestingPanel() {
         const backtestPanel = document.getElementById('backtestPanel');
         const toggleButton = document.getElementById('toggleBacktest');
+        let isPanelOpen = false;
         
         // Initially hide the panel
         backtestPanel.style.transform = 'translateX(100%)';
+        toggleButton.style.transform = 'translateX(0)';
         
         toggleButton.addEventListener('click', () => {
-            backtestPanel.style.transform = backtestPanel.style.transform === 'translateX(100%)' ? 'translateX(0)' : 'translateX(100%)';
-            const svg = toggleButton.querySelector('svg');
-            if (backtestPanel.style.transform === 'translateX(100%)') {
-                svg.style.transform = 'rotate(0deg)';
-            } else {
-                svg.style.transform = 'rotate(180deg)';
-            }
+            isPanelOpen = !isPanelOpen;
+            backtestPanel.style.transform = isPanelOpen ? 'translateX(0)' : 'translateX(100%)';
+            toggleButton.style.transform = isPanelOpen ? 'translateX(0) rotate(180deg)' : 'translateX(0)';
+            
+            // Update button position when panel opens/closes
+            toggleButton.style.right = isPanelOpen ? '16rem' : '0';
         });
     }
 

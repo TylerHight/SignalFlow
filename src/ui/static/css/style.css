@@ -21,6 +21,16 @@ body {
     background: #6b7280;
 }
 
+/* Navigation and backtesting toggle buttons */
+#navToggle, #toggleBacktest {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure panels don't overlap with buttons */
+#navigationPanel {
+    padding-top: 4rem;
+}
+
 /* Smooth transitions */
 a, button {
     transition: all 0.2s ease-in-out;

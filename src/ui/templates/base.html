@@ -10,7 +10,7 @@
 </head>
 <body class="bg-gray-900 text-white">
     <div class="flex">
-        <!-- Navigation Toggle Button -->
+        <!-- Navigation Toggle Button - positioned outside panel -->
         <button id="navToggle" class="fixed top-4 left-4 z-50 p-2 bg-gray-800 rounded-lg hover:bg-gray-700">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -18,7 +18,7 @@
         </button>
 
         <!-- Sidebar -->
-        <div id="navigationPanel" class="fixed h-screen w-64 bg-gray-800 p-4 transition-transform duration-300 ease-in-out">
+        <div id="navigationPanel" class="fixed h-screen w-64 bg-gray-800 p-4 pt-16 transition-transform duration-300 ease-in-out">
             <div class="text-xl font-bold mb-8">Crypto Trading Bot</div>
             <nav>
                 <a href="{{ url_for('index') }}" class="block py-2 px-4 hover:bg-gray-700 rounded">Home</a>
