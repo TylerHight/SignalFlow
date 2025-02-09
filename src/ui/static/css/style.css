@@ -58,6 +58,16 @@ a, button {
     border-radius: 3px;
 }
 
+/* Search container positioning */
+.relative {
+    position: relative !important;
+}
+
+.search-results {
+    display: none;
+    background: #374151;
+}
+
 /* Filter menu transitions */
 .filter-menu {
     transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;

@@ -1,10 +1,12 @@
 from flask import Flask, render_template, request, jsonify
 from src.data.data_fetch.binance_data_fetch.data_fetcher import DataFetcher
+from src.data.data_fetch.binance_data_fetch.binance_client import BinanceClient
+from src.utils.logging_service import LoggingService
 import json
-from src.trading.backtesting.backtest_engine import BacktestEngine
 
 app = Flask(__name__)
 data_fetcher = DataFetcher()
+logger = LoggingService()
 
 @app.route('/')
 def index():
@@ -42,6 +44,18 @@ def toggle_trading():
     data = request.json
     # TODO: Implement trading toggle logic
     return jsonify({"status": "success"})
+
+@app.route('/api/trading-pairs')
+def get_trading_pairs():
+    try:
+        client = BinanceClient()
+        pairs = client.get_trading_pairs()
+        logger.debug(f"Raw trading pairs data: {pairs[:5]}...")  # Log first 5 pairs
+        return jsonify(pairs)
+    except Exception as e:
+        logger.error(f"Detailed error in /api/trading-pairs: {str(e)}")
+        logger.exception("Full traceback:")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

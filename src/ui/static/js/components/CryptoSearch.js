@@ -1,19 +1,13 @@
 class CryptoSearch {
     constructor() {
+        this.cryptoData = [];
         this.searchInput = document.getElementById('cryptoSearch');
         this.searchResults = document.createElement('div');
-        this.searchResults.className = 'search-results hidden absolute w-full bg-gray-700 mt-1 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto left-0 top-full';
+        console.log('Initializing CryptoSearch component'); // Log initialization
+        this.searchResults.className = 'search-results absolute w-full bg-gray-700 mt-1 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto';
         this.searchInput.parentNode.appendChild(this.searchResults);
-       
-        this.filterButton = document.getElementById('filterButton');
-        this.filterMenu = this.createFilterMenu();
         this.selectedCryptos = new Set();
-        this.filters = {
-            marketCap: 'all',
-            volume: 'all',
-            priceChange: 'all'
-        };
-        this.mockData = this.getMockCryptoData();
+        this.fetchCryptoData();
         this.initializeEventListeners();
     }
 
@@ -39,54 +33,61 @@ class CryptoSearch {
     }
 
     initializeEventListeners() {
+        // Attach event listeners to handle input and focus events
+        console.log('Initializing event listeners for CryptoSearch component');
         this.searchInput.addEventListener('input', () => this.filterResults());
         this.searchInput.addEventListener('focus', () => {
-            this.displayResults(this.mockData);
+            console.log('Search input focused'); // Log when input gains focus
+            this.searchResults.style.display = 'block';
+            this.searchResults.style.opacity = '1';
+            this.displayResults(this.cryptoData);
             this.showResults();
         });
-       
-        // Prevent checkbox clicks from bubbling up to the panel
+
+        // Prevent result panel interactions from triggering click outside
         this.searchResults.addEventListener('click', (event) => {
             if (event.target.type === 'checkbox') event.stopPropagation();
         });
 
-        this.filterButton.addEventListener('click', (event) => {
-            event.stopPropagation();
-            this.toggleFilterMenu();
-        });
-        document.addEventListener('click', (event) => {
-            if (!this.searchInput.contains(event.target) && 
-                !this.searchResults.contains(event.target)) {
-                this.hideResults();
-            }
-        });
+        document.addEventListener('click', this.handleClickOutside.bind(this));
     }
 
-    getMockCryptoData() {
-        return [
-            { symbol: 'BTC', name: 'Bitcoin', price: 45000, change24h: 2.5, volume: '1.2B', marketCap: '800B' },
-            { symbol: 'ETH', name: 'Ethereum', price: 3200, change24h: 1.8, volume: '800M', marketCap: '380B' },
-            { symbol: 'BNB', name: 'Binance Coin', price: 380, change24h: -0.5, volume: '400M', marketCap: '60B' },
-            { symbol: 'SOL', name: 'Solana', price: 120, change24h: 3.2, volume: '300M', marketCap: '45B' },
-            { symbol: 'ADA', name: 'Cardano', price: 1.2, change24h: -1.2, volume: '200M', marketCap: '40B' },
-            { symbol: 'XRP', name: 'Ripple', price: 0.8, change24h: 1.5, volume: '150M', marketCap: '35B' },
-            { symbol: 'DOT', name: 'Polkadot', price: 25, change24h: -0.8, volume: '120M', marketCap: '25B' },
-            { symbol: 'DOGE', name: 'Dogecoin', price: 0.15, change24h: 4.2, volume: '180M', marketCap: '20B' },
-            { symbol: 'AVAX', name: 'Avalanche', price: 85, change24h: 2.8, volume: '90M', marketCap: '18B' },
-            { symbol: 'LINK', name: 'Chainlink', price: 18, change24h: -1.5, volume: '70M', marketCap: '15B' }
-        ];
+    async fetchCryptoData() {
+        // Fetch cryptocurrency data from the API
+        try {
+            console.log('Fetching cryptocurrency data...');
+            const response = await fetch('/api/trading-pairs');
+            console.log('API response:', response); // Log the API response
+            const data = await response.json();
+            console.log('Raw data fetched from API:', data); // Log raw API data
+
+            this.cryptoData = data.map(pair => ({
+                symbol: pair.symbol.replace('USDT', ''),
+                name: pair.symbol,
+                price: parseFloat(pair.lastPrice),
+                change24h: parseFloat(pair.priceChangePercent),
+                volume: this.formatVolume(pair.volume)
+            }));
+            console.log('Processed crypto data:', this.cryptoData); // Log processed data
+        } catch (error) {
+            console.error('Error fetching crypto data:', error);
+            this.cryptoData = [];
+        }
     }
 
     filterResults() {
         const searchTerm = this.searchInput.value.toLowerCase();
-        const filteredResults = this.mockData.filter(crypto => 
-            crypto.symbol.toLowerCase().includes(searchTerm) || 
+        console.log('Filtering results for search term:', searchTerm);
+        const filteredResults = this.cryptoData.filter(crypto =>
+            crypto.symbol.toLowerCase().includes(searchTerm) ||
             crypto.name.toLowerCase().includes(searchTerm)
         );
+        console.log('Filtered results:', filteredResults); // Log filtered results
         this.displayResults(filteredResults);
     }
 
     displayResults(results) {
+        console.log('Displaying search results:', results); // Log results to display
         this.searchResults.innerHTML = '';
         results.forEach(crypto => {
             const resultItem = document.createElement('div');
@@ -108,14 +109,13 @@ class CryptoSearch {
             `;
 
             const checkbox = resultItem.querySelector('input[type="checkbox"]');
-           
-            // Make the entire panel clickable
+
+            // Attach click event listener
             resultItem.addEventListener('click', (event) => {
-                if (event.target.type === 'checkbox') return; // Prevent double-triggering when clicking checkbox
+                if (event.target.type === 'checkbox') return; // Ignore clicks on checkboxes
                 checkbox.checked = !checkbox.checked;
                 if (checkbox.checked) {
                     this.selectedCryptos.add(crypto.symbol);
-                    this.searchInput.value = '';
                 } else {
                     this.selectedCryptos.delete(crypto.symbol);
                 }
@@ -128,52 +128,29 @@ class CryptoSearch {
     }
 
     showResults() {
-        this.searchResults.classList.remove('hidden');
+        console.log('Showing results dropdown'); // Log when dropdown is shown
+        this.searchResults.style.display = 'block';
         this.searchResults.style.width = this.searchInput.offsetWidth + 'px';
+        this.searchResults.style.position = 'absolute';
+        this.searchResults.style.zIndex = '1000';
         this.searchResults.style.left = '0';
         this.searchResults.style.top = '100%';
     }
 
     hideResults() {
-        this.searchResults.classList.add('hidden');
-    }
-
-    toggleFilterMenu() {
-        const isHidden = this.filterMenu.classList.contains('hidden');
-        if (isHidden) {
-            const buttonRect = this.filterButton.getBoundingClientRect();
-            this.filterMenu.style.top = `${buttonRect.bottom + window.scrollY}px`;
-            this.filterMenu.style.right = `${window.innerWidth - buttonRect.right}px`;
-        }
-        this.filterMenu.classList.toggle('hidden');
+        console.log('Hiding results dropdown'); // Log when dropdown is hidden
+        this.searchResults.style.display = 'none';
     }
 
     triggerSelectionChange() {
-        const event = new CustomEvent('cryptoSelectionChange', {
-            detail: Array.from(this.selectedCryptos)
-        });
-        document.dispatchEvent(event);
+        console.log('Selected cryptocurrencies updated:', Array.from(this.selectedCryptos)); // Log selected items
     }
 
-    getSelectedCryptos() {
-        return Array.from(this.selectedCryptos);
-    }
-
-    submitSelected() {
-        const selectedSymbols = Array.from(this.selectedCryptos);
-        if (selectedSymbols.length === 0) {
-            alert('Please select at least one cryptocurrency');
-            return;
-        }
-
-        // Create panels for selected cryptocurrencies
-        selectedSymbols.forEach(symbol => {
-            window.tradeLab.addChart(symbol);
-        });
-
-        // Clear selections and hide dropdown
-        this.selectedCryptos.clear();
-        this.hideResults();
-        this.searchInput.value = '';
+    formatVolume(volume) {
+        // Helper method to format large volume numbers
+        if (volume >= 1e9) return `${(volume / 1e9).toFixed(1)}B`;
+        if (volume >= 1e6) return `${(volume / 1e6).toFixed(1)}M`;
+        if (volume >= 1e3) return `${(volume / 1e3).toFixed(1)}K`;
+        return volume.toString();
     }
 }
