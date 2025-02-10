@@ -1,0 +1,1 @@
+- Adhere to proper architecture practices, such as using a layered architecture, and ensure that the code is clean and maintainable.
