@@ -7,9 +7,9 @@ class CryptoSearch {
         this.searchResults.className = 'search-results absolute w-full bg-gray-700 mt-1 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto';
         this.searchInput.parentNode.appendChild(this.searchResults);
         this.selectedCryptos = new Set();
+        this.isDropdownOpen = false; // Track the state of the dropdown
         this.fetchCryptoData();
         this.initializeEventListeners();
-        this.isDropdownOpen = false; // Track the state of the dropdown
     }
 
     initializeEventListeners() {
@@ -21,14 +21,9 @@ class CryptoSearch {
             this.filterResults();
         });
 
-        // Handle focus on the search input
-        this.searchInput.addEventListener('focus', () => {
-            console.log('Search input focused'); // Log when input gains focus
-            if (!this.isDropdownOpen) {
-                this.showResults();
-                this.displayResults(this.cryptoData);
-            }
-        });
+        // Handle search input focus or click
+        this.searchInput.addEventListener('focus', this.handleSearchFocus.bind(this));
+        this.searchInput.addEventListener('click', this.handleSearchFocus.bind(this));
 
         // Prevent clicks inside the dropdown from closing it
         this.searchResults.addEventListener('click', (event) => {
@@ -41,10 +36,18 @@ class CryptoSearch {
         // Close the dropdown when pressing the Escape key
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
-                console.log('Escape key pressed'); // Log Escape key press
+                console.log('Escape key pressed'); // Log Escape key event
                 this.hideResults();
             }
         });
+    }
+
+    handleSearchFocus() {
+        console.log('Search input clicked or focused'); // Log when input is clicked or focused
+        if (!this.isDropdownOpen) {
+            this.showResults();
+            this.displayResults(this.cryptoData);
+        }
     }
 
     async fetchCryptoData() {
