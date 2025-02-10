@@ -1,8 +1,23 @@
 import datetime
 
-
 class DataFormatter:
-    """Handles formatting of raw data from Binance API."""
+    @staticmethod
+    def format_klines(klines_data):
+        """
+        Format raw klines data for charting library
+        """
+        formatted_klines = []
+        for kline in klines_data:
+            formatted_kline = {
+                'time': kline[0] / 1000,  # Convert milliseconds to seconds
+                'open': float(kline[1]),
+                'high': float(kline[2]),
+                'low': float(kline[3]),
+                'close': float(kline[4]),
+                'volume': float(kline[5])
+            }
+            formatted_klines.append(formatted_kline)
+        return formatted_klines
 
     @staticmethod
     def format_historical_candles(raw_candles):

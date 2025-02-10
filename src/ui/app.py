@@ -70,6 +70,18 @@ def get_historical_data(symbol):
         logger.error(f"Error fetching historical data: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/klines/<symbol>')
+def get_klines(symbol):
+    try:
+        interval = request.args.get('interval', '1h')
+        limit = int(request.args.get('limit', 1000))
+        data_fetcher = DataFetcher()
+        klines = data_fetcher.fetch_klines_data(symbol, interval, limit)
+        return jsonify(klines)
+    except Exception as e:
+        logger.error(f"Error fetching klines: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/api/realtime-data/<symbol>')
 def get_realtime_data(symbol):
     callback = lambda data: print(data)  # Replace with actual callback

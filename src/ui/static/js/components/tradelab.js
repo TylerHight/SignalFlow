@@ -19,6 +19,7 @@ class TradeLab {
         const chartContainer = document.createElement('div');
         chartContainer.className = 'bg-gray-800 p-4 rounded-lg flex flex-col';
         chartContainer.style.height = '400px';
+        chartContainer.setAttribute('data-symbol', symbol);
         
         // Add header with crypto name and close button
         const header = document.createElement('div');
@@ -33,14 +34,20 @@ class TradeLab {
         `;
         chartContainer.appendChild(header);
 
-        const chart = this.createChart(chartContainer, symbol);
+        // Add chart container
+        const chartDiv = document.createElement('div');
+        chartDiv.style.height = 'calc(100% - 2rem)';
+        chartContainer.appendChild(chartDiv);
+        document.getElementById('chartGrid').appendChild(chartContainer);
+
+        const chart = this.createChart(chartDiv, symbol);
         this.charts.set(symbol, chart);
         this.activeSymbols.add(symbol);
         this.subscribeToSymbol(symbolWithPair);
 
         await this.fetchAndDisplayData(symbol, chart);
     }
-
+    
     createChart(container, symbol) {
         const chart = LightweightCharts.createChart(container, {
             layout: {
@@ -74,7 +81,7 @@ class TradeLab {
     async fetchAndDisplayData(symbol, chart) {
         try {
             const symbolWithPair = symbol + 'USDT';
-            const response = await fetch(`/api/historical-data/${symbolWithPair}`);
+            const response = await fetch(`/api/klines/${symbolWithPair}?interval=1h`);
             const data = await response.json();
             const formattedData = data.map(d => ({
                 time: d.time,
@@ -118,5 +125,23 @@ class TradeLab {
 
     subscribeToSymbol(symbol) {
         // Add WebSocket subscription code here
+    }
+
+    updateChartData(symbol, data) {
+        const chart = this.charts.get(symbol);
+        if (chart && data.isClosed) {
+            const candleData = {
+                time: data.time,
+                open: data.open,
+                high: data.high,
+                low: data.low,
+                close: data.close
+            };
+            
+            chart.candleSeries.update(candleData);
+            this.chartData.set(symbol, candleData);
+        } else if (chart) {
+            chart.candleSeries.update(data);
+        }
     }
 }

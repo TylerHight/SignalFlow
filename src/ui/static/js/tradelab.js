@@ -1,5 +1,6 @@
 class TradeLab {
     constructor() {
+        this.baseSymbol = 'USDT';
         this.charts = new Map();
         this.activeSymbols = new Set();
         this.chartData = new Map();
@@ -7,6 +8,7 @@ class TradeLab {
         this.initializeEventListeners();
         this.initializeBacktestingPanel();
         this.initializeWebSocket();
+        this.initializeDataRefresh();
     }
 
     initializeEventListeners() {
@@ -27,6 +29,15 @@ class TradeLab {
         document.getElementById('strategy').addEventListener('change', () => {
             this.updateStrategyParameters();
         });
+    }
+
+    initializeDataRefresh() {
+        // Refresh data every minute
+        setInterval(() => {
+            this.charts.forEach((chart, symbol) => {
+                this.fetchAndDisplayData(symbol, chart);
+            });
+        }, 60000); // 60 seconds
     }
 
     initializeBacktestingPanel() {
@@ -54,17 +65,18 @@ class TradeLab {
             return;
         }
         
-        const symbolWithPair = symbol + 'USDT';
+        const symbolWithPair = symbol + this.baseSymbol;
  
         const chartContainer = document.createElement('div');
         chartContainer.className = 'bg-gray-800 p-4 rounded-lg flex flex-col';
         chartContainer.style.height = '400px';
+        chartContainer.dataset.symbol = symbol;
         
         // Add header with crypto name and close button
         const header = document.createElement('div');
         header.className = 'flex justify-between items-center mb-4';
         header.innerHTML = `
-            <h3 class="text-xl font-bold">${symbol}</h3>
+            <h3 class="text-xl font-bold">${symbol} - $0.00</h3>
             <button class="text-gray-400 hover:text-gray-200" onclick="window.tradeLab.removeChart('${symbol}')">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -121,7 +133,7 @@ class TradeLab {
 
     async fetchAndDisplayData(symbol, chart) {
         try {
-            const symbolWithPair = symbol + 'USDT';
+            const symbolWithPair = symbol + this.baseSymbol;
             const response = await fetch(`/api/historical-data/${symbolWithPair}`);
             const data = await response.json();
             const formattedData = data.map(d => ({
@@ -131,8 +143,11 @@ class TradeLab {
                 low: parseFloat(d.low),
                 close: parseFloat(d.close)
             }));
-            chart.candleSeries.setData(formattedData);
-            this.chartData.set(symbol, formattedData[formattedData.length - 1]);
+            if (formattedData.length > 0) {
+                chart.candleSeries.setData(formattedData);
+                this.chartData.set(symbol, formattedData[formattedData.length - 1]);
+                this.updateChartTitle(symbol, formattedData[formattedData.length - 1].close);
+            }
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -148,6 +163,12 @@ class TradeLab {
             }
         };
 
+        this.websocket.onerror = (error) => {
+            console.error('WebSocket error:', error);
+            // Attempt to reconnect after 5 seconds
+            setTimeout(() => this.initializeWebSocket(), 5000);
+        };
+
         this.websocket.onclose = () => {
             setTimeout(() => this.initializeWebSocket(), 5000);
         };
@@ -155,6 +176,7 @@ class TradeLab {
 
     subscribeToSymbol(symbol) {
         if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
+            console.log(`Subscribing to ${symbol}`);
             const subscription = {
                 method: 'SUBSCRIBE',
                 params: [`${symbol.toLowerCase()}@kline_1m`],
@@ -165,7 +187,7 @@ class TradeLab {
     }
 
     updateChartData(data) {
-        const symbol = data.s.replace('USDT', '');
+        const symbol = data.s.replace(this.baseSymbol, '');
         const chart = this.charts.get(symbol);
         
         if (chart) {
@@ -177,6 +199,7 @@ class TradeLab {
                 close: parseFloat(data.k.c)
             };
             
+            this.updateChartTitle(symbol, candleData.close);
             chart.candleSeries.update(candleData);
             this.chartData.set(symbol, candleData);
         }
@@ -263,6 +286,14 @@ class TradeLab {
             if (container) {
                 container.remove();
             }
+        }
+    }
+
+    updateChartTitle(symbol, price) {
+        const chartContainer = document.querySelector(`[data-symbol="${symbol}"]`);
+        if (chartContainer) {
+            const title = chartContainer.querySelector('h3');
+            title.textContent = `${symbol} - $${price.toFixed(2)}`;
         }
     }
 }

@@ -20,6 +20,19 @@ class DataFetcher:
         """
         return self.client.get_ticker_price(symbol)
     
+    def fetch_klines_data(self, symbol="BTCUSDT", interval="1h", limit=1000):
+        """
+        Fetch kline/candlestick data for charting.
+        
+        :param symbol: Trading pair symbol
+        :param interval: Kline interval (1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M)
+        :param limit: Number of klines to fetch
+        :return: List of formatted kline data
+        """
+        raw_data = self.client.get_historical_candles(symbol, interval, limit)
+        formatted_data = DataFormatter.format_klines(raw_data)
+        return formatted_data
+
     def fetch_realtime_data(self, symbol="BTCUSDT", callback=None):
         """Fetch real-time data using WebSocket"""
         websocket_client = BinanceWebSocket(symbol, callback)
