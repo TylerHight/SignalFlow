@@ -10,6 +10,7 @@ Trade Lab
 {% block content %}
 <div class="flex items-center space-x-4 mb-6 relative">
     <div class="relative flex-1 max-w-2xl">
+        <label for="cryptoSearch" class="sr-only">Search Cryptocurrencies</label>
         <input type="text" id="cryptoSearch"
                class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 min-w-[500px]"
                placeholder="Search cryptocurrencies...">
@@ -35,7 +36,7 @@ Trade Lab
         <div class="space-y-4">
             <!-- Timeframe Selection -->
             <div>
-                <label class="block text-gray-400 mb-2">Timeframe</label>
+                <label for="timeframe" class="block text-gray-400 mb-2">Timeframe</label>
                 <select id="timeframe" class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
                     <option value="1m">1 minute</option>
                     <option value="5m">5 minutes</option>
@@ -48,7 +49,7 @@ Trade Lab
 
             <!-- Strategy Selection -->
             <div>
-                <label class="block text-gray-400 mb-2">Strategy</label>
+                <label for="strategy" class="block text-gray-400 mb-2">Strategy</label>
                 <select id="strategy" class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
                     <option value="ma_cross">MA Crossover</option>
                     <option value="rsi">RSI Strategy</option>
@@ -82,8 +83,8 @@ Trade Lab
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
         </button>
-        <div class="grid grid-cols-2 gap-4" id="chartGrid">
-            <!-- Charts will be dynamically added here -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="chartGrid">
+            <!-- Widgets will be dynamically added here -->
         </div>
     </div>
 </div>
@@ -97,9 +98,22 @@ Trade Lab
     </div>
 </div>
 
-<script src="{{ url_for('static', filename='js/components/CryptoSearch.js') }}"></script>
-<script src="{{ url_for('static', filename='js/tradelab.js') }}"></script>
+<script src="../static/js/components/CryptoSearch.js" type="text/javascript"></script>
+<script src="../static/js/components/tradelab.js" type="text/javascript"></script>
 <script>
+    // Add error handling for script loading
+    document.querySelectorAll('script').forEach(script => {
+        script.onerror = function() {
+            console.error('Failed to load script:', script.src);
+            alert('Failed to load required scripts. Please refresh the page or contact support.');
+        };
+    });
+
+    window.onerror = function(msg, url, lineNo, columnNo, error) {
+        console.error('Error: ' + msg + '\nURL: ' + url + '\nLine: ' + lineNo + '\nColumn: ' + columnNo + '\nError: ' + error);
+        return false;
+    };
+
     // Initialize the CryptoSearch and TradeLab components
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize CryptoSearch instance

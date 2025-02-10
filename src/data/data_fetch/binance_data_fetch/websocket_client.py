@@ -1,6 +1,7 @@
 import json
 import websocket
 from threading import Thread
+from src.utils.logging_service import LoggingService
 
 class BinanceWebSocket:
     def __init__(self, symbol="btcusdt", callback=None):
@@ -9,6 +10,7 @@ class BinanceWebSocket:
         self.ws = None
         self.ws_thread = None
         self.base_endpoint = "wss://stream.binance.us:9443/ws"
+        self.logger = LoggingService()
         self.stream = f"{self.symbol.lower()}@kline_1m"  # Changed to kline stream
 
     def connect(self):
@@ -26,7 +28,7 @@ class BinanceWebSocket:
         self.ws_thread.start()
 
     def _on_message(self, ws, message):
-        """Handle incoming messages"""
+        self.logger.debug(f"WebSocket message received: {message[:100]}...")
         data = json.loads(message)
         if data.get('e') == 'kline':
             kline_data = {
@@ -43,15 +45,17 @@ class BinanceWebSocket:
 
     def _on_error(self, ws, error):
         """Handle errors"""
-        print(f"Error: {error}")
+        self.logger.error(f"WebSocket error: {error}")
+        self.connect()  # Attempt to reconnect
 
     def _on_close(self, ws, close_status_code, close_msg):
         """Handle connection close"""
-        print("WebSocket connection closed")
+        self.logger.warning(f"WebSocket connection closed: {close_msg}")
+        self.connect()  # Attempt to reconnect
 
     def _on_open(self, ws):
         """Handle connection open"""
-        print("WebSocket connection established")
+        self.logger.info("WebSocket connection established")
 
     def disconnect(self):
         """Close WebSocket connection"""

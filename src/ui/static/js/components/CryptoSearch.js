@@ -164,7 +164,7 @@ class CryptoSearch {
             selectedArray.forEach(symbol => window.tradeLab.addChart(symbol));
         }
 
-        this.selectedCryptos.clear();
+        this.selectedCryptos.clear(); // Reset the selected cryptos
 
         const checkboxes = this.searchResults.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(checkbox => (checkbox.checked = false));

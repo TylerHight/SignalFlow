@@ -6,7 +6,7 @@ from src.data.data_fetch.binance_data_fetch.websocket_client import BinanceWebSo
 from src.utils.logging_service import LoggingService
 import json
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 data_fetcher = DataFetcher()
 logger = LoggingService()
 

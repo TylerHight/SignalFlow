@@ -94,3 +94,52 @@ a, button {
     padding: 0.75rem;
     width: 100%;
 }
+
+/* Dynamic grid layout for charts */
+#chartGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+}
+
+#chartGrid div {
+    transition: transform 0.2s ease-in-out; /* Smooth hover effect for widgets */
+}
+
+#chartGrid div:hover {
+    transform: scale(1.05); /* Slight zoom on hover */
+}
+
+/* Widget container styles */
+.widget-container {
+    background-color: #1f2937; /* Dark background matching the theme */
+    border-radius: 0.5rem; /* Rounded corners */
+    padding: 1rem;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for elevation */
+    display: flex;
+    flex-direction: column; /* Stack header and chart */
+    height: 250px; /* Compact size for small widgets */
+    overflow: hidden;
+}
+
+/* Widget header styles */
+.widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: #d1d5db; /* Light text color */
+}
+
+.widget-header button {
+    background: none;
+    border: none;
+    color: #6b7280; /* Subtle close button */
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+}
+
+.widget-header button:hover {
+    color: #9ca3af; /* Hover transition for clarity */
+}
