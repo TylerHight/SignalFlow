@@ -9,47 +9,42 @@ class CryptoSearch {
         this.selectedCryptos = new Set();
         this.fetchCryptoData();
         this.initializeEventListeners();
-    }
-
-    createFilterMenu() {
-        const filterContainer = document.createElement('div');
-        filterContainer.className = 'hidden absolute right-24 mt-2 w-64 bg-gray-700 rounded-lg shadow-lg z-50 p-4';
-        filterContainer.innerHTML = `
-            <select class="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm" id="marketCapFilter">
-                <option value="all">All Market Caps</option>
-                <option value="high">High Cap (>$50B)</option>
-                <option value="mid">Mid Cap ($10B-$50B)</option>
-                <option value="low">Low Cap (<$10B)</option>
-            </select>
-            <select class="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm" id="volumeFilter">
-                <option value="all">All Volumes</option>
-                <option value="high">High Volume (>$500M)</option>
-                <option value="mid">Mid Volume ($100M-$500M)</option>
-                <option value="low">Low Volume (<$100M)</option>
-            </select>
-        `;
-        document.body.appendChild(filterContainer);
-        return filterContainer;
+        this.isDropdownOpen = false; // Track the state of the dropdown
     }
 
     initializeEventListeners() {
-        // Attach event listeners to handle input and focus events
         console.log('Initializing event listeners for CryptoSearch component');
-        this.searchInput.addEventListener('input', () => this.filterResults());
-        this.searchInput.addEventListener('focus', () => {
-            console.log('Search input focused'); // Log when input gains focus
-            this.searchResults.style.display = 'block';
-            this.searchResults.style.opacity = '1';
-            this.displayResults(this.cryptoData);
-            this.showResults();
+
+        // Handle input for filtering crypto data
+        this.searchInput.addEventListener('input', () => {
+            this.isDropdownOpen = true; // Ensure dropdown is considered open
+            this.filterResults();
         });
 
-        // Prevent result panel interactions from triggering click outside
+        // Handle focus on the search input
+        this.searchInput.addEventListener('focus', () => {
+            console.log('Search input focused'); // Log when input gains focus
+            if (!this.isDropdownOpen) {
+                this.showResults();
+                this.displayResults(this.cryptoData);
+            }
+        });
+
+        // Prevent clicks inside the dropdown from closing it
         this.searchResults.addEventListener('click', (event) => {
             if (event.target.type === 'checkbox') event.stopPropagation();
         });
 
+        // Close the dropdown when clicking outside of the search bar or dropdown
         document.addEventListener('click', this.handleClickOutside.bind(this));
+
+        // Close the dropdown when pressing the Escape key
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                console.log('Escape key pressed'); // Log Escape key press
+                this.hideResults();
+            }
+        });
     }
 
     async fetchCryptoData() {
@@ -135,11 +130,22 @@ class CryptoSearch {
         this.searchResults.style.zIndex = '1000';
         this.searchResults.style.left = '0';
         this.searchResults.style.top = '100%';
+        this.isDropdownOpen = true; // Update state to open
     }
 
     hideResults() {
         console.log('Hiding results dropdown'); // Log when dropdown is hidden
         this.searchResults.style.display = 'none';
+        this.isDropdownOpen = false; // Update state to closed
+    }
+
+    handleClickOutside(event) {
+        const isClickInsideInput = this.searchInput.contains(event.target);
+        const isClickInsideResults = this.searchResults.contains(event.target);
+
+        if (!isClickInsideInput && !isClickInsideResults) {
+            this.hideResults(); // Close the dropdown if clicked outside
+        }
     }
 
     triggerSelectionChange() {
