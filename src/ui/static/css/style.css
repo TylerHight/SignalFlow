@@ -46,6 +46,14 @@ a, button {
     background: #1f2937;
     border-radius: 0.5rem;
     padding: 1rem;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-inner {
+    flex: 1;
+    min-height: 0;
 }
 
 /* Search results scrollbar */

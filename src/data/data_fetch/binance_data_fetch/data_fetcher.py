@@ -1,13 +1,15 @@
 from .binance_client import BinanceClient
+from .websocket_client import BinanceWebSocket
 from ...data_processing.data_formatter import DataFormatter
 import datetime
-
+from src.utils.logging_service import LoggingService
 
 class DataFetcher:
     """Fetches and formats data by integrating the client and formatter."""
 
     def __init__(self):
         self.client = BinanceClient()
+        self.logger = LoggingService()
 
     def fetch_current_price(self, symbol="BTCUSDT"):
         """
@@ -17,6 +19,12 @@ class DataFetcher:
         :return: Dict containing the current price.
         """
         return self.client.get_ticker_price(symbol)
+    
+    def fetch_realtime_data(self, symbol="BTCUSDT", callback=None):
+        """Fetch real-time data using WebSocket"""
+        websocket_client = BinanceWebSocket(symbol, callback)
+        websocket_client.connect()
+        return websocket_client
 
     def fetch_historical_data(self, symbol="BTCUSDT", interval="1d", limit=100, start_date=None, end_date=None):
         """
@@ -39,4 +47,6 @@ class DataFetcher:
             end_time = int(datetime.datetime.strptime(end_date, "%Y-%m-%d").timestamp() * 1000)
 
         raw_data = self.client.get_historical_candles(symbol, interval, limit, start_time, end_time)
-        return DataFormatter.format_historical_candles(raw_data)
+        formatted_data = DataFormatter.format_historical_candles(raw_data)
+        self.logger.debug(f"Fetched historical data for {symbol} - {len(formatted_data)} records")
+        return formatted_data

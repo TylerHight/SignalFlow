@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, jsonify
-from src.data.data_fetch.binance_data_fetch.data_fetcher import DataFetcher
+
 from src.data.data_fetch.binance_data_fetch.binance_client import BinanceClient
+from src.data.data_fetch.binance_data_fetch.data_fetcher import DataFetcher
+from src.data.data_fetch.binance_data_fetch.websocket_client import BinanceWebSocket
 from src.utils.logging_service import LoggingService
 import json
 
@@ -56,6 +58,22 @@ def get_trading_pairs():
         logger.error(f"Detailed error in /api/trading-pairs: {str(e)}")
         logger.exception("Full traceback:")
         return jsonify({"error": str(e)}), 500
+
+@app.route('/api/historical-data/<symbol>')
+def get_historical_data(symbol):
+    try:
+        interval = request.args.get('interval', '1h')
+        limit = int(request.args.get('limit', 100))
+        data = data_fetcher.fetch_historical_data(symbol, interval, limit)
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"Error fetching historical data: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/realtime-data/<symbol>')
+def get_realtime_data(symbol):
+    callback = lambda data: print(data)  # Replace with actual callback
+    return data_fetcher.fetch_realtime_data(symbol, callback)
 
 if __name__ == '__main__':
     app.run(debug=True)

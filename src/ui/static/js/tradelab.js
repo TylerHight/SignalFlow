@@ -2,8 +2,11 @@ class TradeLab {
     constructor() {
         this.charts = new Map();
         this.activeSymbols = new Set();
+        this.chartData = new Map();
+        this.websocket = null;
         this.initializeEventListeners();
         this.initializeBacktestingPanel();
+        this.initializeWebSocket();
     }
 
     initializeEventListeners() {
@@ -50,7 +53,9 @@ class TradeLab {
             alert('This symbol is already displayed');
             return;
         }
-
+        
+        const symbolWithPair = symbol + 'USDT';
+ 
         const chartContainer = document.createElement('div');
         chartContainer.className = 'bg-gray-800 p-4 rounded-lg flex flex-col';
         chartContainer.style.height = '400px';
@@ -79,6 +84,7 @@ class TradeLab {
         const chart = this.createChart(chartDiv, symbol);
         this.charts.set(symbol, chart);
         this.activeSymbols.add(symbol);
+        this.subscribeToSymbol(symbolWithPair);
 
         await this.fetchAndDisplayData(symbol, chart);
     }
@@ -115,7 +121,8 @@ class TradeLab {
 
     async fetchAndDisplayData(symbol, chart) {
         try {
-            const response = await fetch(`/api/historical-data/${symbol}`);
+            const symbolWithPair = symbol + 'USDT';
+            const response = await fetch(`/api/historical-data/${symbolWithPair}`);
             const data = await response.json();
             const formattedData = data.map(d => ({
                 time: d.time,
@@ -125,8 +132,53 @@ class TradeLab {
                 close: parseFloat(d.close)
             }));
             chart.candleSeries.setData(formattedData);
+            this.chartData.set(symbol, formattedData[formattedData.length - 1]);
         } catch (error) {
             console.error('Error fetching data:', error);
+        }
+    }
+
+    initializeWebSocket() {
+        this.websocket = new WebSocket('wss://stream.binance.com:9443/ws');
+        
+        this.websocket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.e === 'kline') {
+                this.updateChartData(data);
+            }
+        };
+
+        this.websocket.onclose = () => {
+            setTimeout(() => this.initializeWebSocket(), 5000);
+        };
+    }
+
+    subscribeToSymbol(symbol) {
+        if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
+            const subscription = {
+                method: 'SUBSCRIBE',
+                params: [`${symbol.toLowerCase()}@kline_1m`],
+                id: Date.now()
+            };
+            this.websocket.send(JSON.stringify(subscription));
+        }
+    }
+
+    updateChartData(data) {
+        const symbol = data.s.replace('USDT', '');
+        const chart = this.charts.get(symbol);
+        
+        if (chart) {
+            const candleData = {
+                time: data.k.t / 1000,
+                open: parseFloat(data.k.o),
+                high: parseFloat(data.k.h),
+                low: parseFloat(data.k.l),
+                close: parseFloat(data.k.c)
+            };
+            
+            chart.candleSeries.update(candleData);
+            this.chartData.set(symbol, candleData);
         }
     }
 

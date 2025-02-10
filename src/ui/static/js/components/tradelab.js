@@ -2,6 +2,11 @@ class TradeLab {
     constructor() {
         this.activeSymbols = new Set();
         this.charts = new Map();
+        this.chartData = new Map();
+        this.websocket = null;
+        this.initializeEventListeners();
+        this.initializeBacktestingPanel();
+        this.initializeWebSocket();
     }
 
     async addChart(symbol) {
@@ -9,6 +14,7 @@ class TradeLab {
             alert('This symbol is already displayed');
             return;
         }
+        const symbolWithPair = symbol + 'USDT';
 
         const chartContainer = document.createElement('div');
         chartContainer.className = 'bg-gray-800 p-4 rounded-lg flex flex-col';
@@ -27,12 +33,12 @@ class TradeLab {
         `;
         chartContainer.appendChild(header);
 
-        const { chart, candleSeries } = this.createChart(chartContainer, symbol);
-        this.charts.set(symbol, { chart, candleSeries });
+        const chart = this.createChart(chartContainer, symbol);
+        this.charts.set(symbol, chart);
         this.activeSymbols.add(symbol);
+        this.subscribeToSymbol(symbolWithPair);
 
-        document.body.appendChild(chartContainer); // Assuming you want to append it to the body
-        await this.fetchAndDisplayData(symbol, { candleSeries });
+        await this.fetchAndDisplayData(symbol, chart);
     }
 
     createChart(container, symbol) {
@@ -67,7 +73,8 @@ class TradeLab {
 
     async fetchAndDisplayData(symbol, chart) {
         try {
-            const response = await fetch(`/api/historical-data/${symbol}`);
+            const symbolWithPair = symbol + 'USDT';
+            const response = await fetch(`/api/historical-data/${symbolWithPair}`);
             const data = await response.json();
             const formattedData = data.map(d => ({
                 time: d.time,
@@ -77,6 +84,7 @@ class TradeLab {
                 close: parseFloat(d.close)
             }));
             chart.candleSeries.setData(formattedData);
+            this.chartData.set(symbol, formattedData[formattedData.length - 1]);
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -94,5 +102,21 @@ class TradeLab {
                 container.remove();
             }
         }
+    }
+
+    initializeEventListeners() {
+        // Add event listener code here
+    }
+
+    initializeBacktestingPanel() {
+        // Add backtesting panel code here
+    }
+
+    initializeWebSocket() {
+        // Add WebSocket initialization code here
+    }
+
+    subscribeToSymbol(symbol) {
+        // Add WebSocket subscription code here
     }
 }
