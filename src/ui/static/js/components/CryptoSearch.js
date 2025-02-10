@@ -8,6 +8,7 @@ class CryptoSearch {
         this.searchInput.parentNode.appendChild(this.searchResults);
         this.selectedCryptos = new Set();
         this.isDropdownOpen = false; // Track the state of the dropdown
+        this.filterButton = document.getElementById('filterButton'); // Add reference to the filter button
         this.fetchCryptoData();
         this.initializeEventListeners();
     }
@@ -30,6 +31,11 @@ class CryptoSearch {
             if (event.target.type === 'checkbox') event.stopPropagation();
         });
 
+        // Prevent closing the dropdown when clicking the filter button
+        if (this.filterButton) {
+            this.filterButton.addEventListener('click', this.handleFilterClick.bind(this));
+        }
+
         // Close the dropdown when clicking outside of the search bar or dropdown
         document.addEventListener('click', this.handleClickOutside.bind(this));
 
@@ -48,6 +54,15 @@ class CryptoSearch {
             this.showResults();
             this.displayResults(this.cryptoData);
         }
+    }
+
+    handleFilterClick(event) {
+        console.log('Filter button clicked'); // Log when filter button is clicked
+        if (!this.isDropdownOpen) {
+            this.showResults(); // Ensure the dropdown is visible if it was closed
+        }
+        this.searchResults.scrollTop = 0; // Reset the scroll position to the top
+        event.stopPropagation(); // Prevent click from propagating and triggering dropdown closure
     }
 
     async fetchCryptoData() {
@@ -82,6 +97,7 @@ class CryptoSearch {
         );
         console.log('Filtered results:', filteredResults); // Log filtered results
         this.displayResults(filteredResults);
+        this.searchResults.scrollTop = 0; // Reset scroll position when filtering results
     }
 
     displayResults(results) {
@@ -145,8 +161,9 @@ class CryptoSearch {
     handleClickOutside(event) {
         const isClickInsideInput = this.searchInput.contains(event.target);
         const isClickInsideResults = this.searchResults.contains(event.target);
+        const isClickOnFilterButton = this.filterButton && this.filterButton.contains(event.target);
 
-        if (!isClickInsideInput && !isClickInsideResults) {
+        if (!isClickInsideInput && !isClickInsideResults && !isClickOnFilterButton) {
             this.hideResults(); // Close the dropdown if clicked outside
         }
     }
