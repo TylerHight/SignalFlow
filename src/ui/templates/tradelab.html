@@ -9,8 +9,8 @@ Trade Lab
 {% block content %}
 <div class="flex items-center space-x-4 mb-6 relative">
     <div class="relative flex-1 max-w-2xl">
-        <input type="text" id="cryptoSearch" 
-               class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 min-w-[500px]" 
+        <input type="text" id="cryptoSearch"
+               class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 min-w-[500px]"
                placeholder="Search cryptocurrencies...">
         <div class="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-2">
             <button id="filterButton" class="bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-sm flex items-center">
@@ -18,7 +18,7 @@ Trade Lab
                     <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
                 </svg>
             </button>
-            <button id="addSelectedCryptos" 
+            <button id="addSelectedCryptos"
                     class="bg-blue-600 hover:bg-blue-700 px-4 py-1 rounded text-sm">
                 Add Selected
             </button>
@@ -75,7 +75,7 @@ Trade Lab
     <!-- Main Chart Area -->
     <div class="flex-1">
         <!-- Backtesting Toggle Button - positioned relative to panel -->
-        <button id="toggleBacktest" 
+        <button id="toggleBacktest"
                 class="fixed right-0 top-4 z-50 p-2 bg-blue-600 hover:bg-blue-700 rounded-lg transform transition-all duration-300">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -99,20 +99,29 @@ Trade Lab
 <script src="{{ url_for('static', filename='js/components/CryptoSearch.js') }}"></script>
 <script src="{{ url_for('static', filename='js/tradelab.js') }}"></script>
 <script>
-// Initialize TradingView's lightweight charts
-document.addEventListener('DOMContentLoaded', function() {
-    const cryptoSearch = new CryptoSearch();
-    document.getElementById('addSelectedCryptos').addEventListener('click', () => cryptoSearch.submitSelected());
-    initializeTradeLab();
-});
+    // Initialize the CryptoSearch and TradeLab components
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize CryptoSearch instance
+        const cryptoSearch = new CryptoSearch();
 
-function initializeTradeLab() {
-    // Implementation will be added
-    console.log("Trade Lab initialized");
-}
+        // Attach event listener for adding selected cryptos
+        document.getElementById('addSelectedCryptos').addEventListener('click', () => {
+            cryptoSearch.submitSelected(); // Trigger submission of selected cryptos
+        });
 
-function closeModal() {
-    document.getElementById('resultsModal').classList.add('hidden');
-}
+        // Initialize TradeLab system
+        initializeTradeLab();
+    });
+
+    // Initialization for TradeLab system
+    function initializeTradeLab() {
+        // Placeholder or additional setup logic
+        console.log("Trade Lab initialized");
+    }
+
+    // Close modal function
+    function closeModal() {
+        document.getElementById('resultsModal').classList.add('hidden');
+    }
 </script>
 {% endblock %}
